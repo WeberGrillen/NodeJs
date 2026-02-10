@@ -34,3 +34,8 @@ console.log(people)
 
 // ASI (automatic semicolon insertion)
 
+// How to define string in JS:
+// ""
+// ''
+// ``
+
