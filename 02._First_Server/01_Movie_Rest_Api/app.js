@@ -19,15 +19,30 @@ const movieList = [
      new Movie (5, "Frozen", 2013)]
 
 app.get('/movies', (req, res) => {
-    res.send({movies: movieList})
+    // res.send({movies: movieList})
+    res.send({ data: movieList })
 })
 
 app.get('/movies/:id', (req, res) => {
 
     const id = Number(req.params.id)
     const movie = movieList.find(m => m.id === id)
-    res.send({data: movie})
+
+    if (!movie) {
+        res.status(404).send({ errorMesage: `No movie found by id: ${req.params.id}` })
+    } else {
+        res.send({ movie })
+    }
 })
 
+
+/*
+    Status code
+2xx: Success
+3xx: Redicretion
+4xx: Client Error
+5xx: Server Error
+
+*/
 
 app.listen(8080)
