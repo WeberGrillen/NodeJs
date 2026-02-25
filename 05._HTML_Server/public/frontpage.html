@@ -1,0 +1,232 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--3. CSS File -->
+        <!-- <link rel="stylesheet" href="./frontpage.css" /> -->
+
+
+        <!-- 2. CSS style tag-->
+        <style>
+        body {
+                font-family: Arial, sans-serif;
+                background: #333;
+                color: white;
+
+                display: flex;
+                flex-direction: column;   /* stack vertically */
+                justify-content: center;  /* vertical center */
+                align-items: center;      /* horizontal center */
+
+                height: 100vh;
+                margin: 0;
+                text-align: center;
+    }
+            h1 {
+                font-size: 2.5 rem;
+                display: flex;
+                justify-content: center;   /* horizontal center */
+                align-items: center; 
+            }
+            
+            #countdown {
+                font-size: 1.8rem;
+                margin-top: 20px;
+                display: flex;
+                justify-content: center;   /* horizontal center */
+                align-items: center; 
+            }
+            .frontpage-title {
+                color: white
+            }
+
+            .frontpage-button {
+                display: flex;
+                justify-content: center;   /* horizontal center */
+                align-items: center; 
+            }
+            #gifContainer {
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                overflow: hidden;
+}
+
+            .mlgGif {
+                position: absolute;
+                width: 700px;
+                pointer-events: none;
+                animation: fadeIn 0.8s forwards;
+            }
+
+            @keyframes fadeIn {
+                 from { opacity: 0; transform: scale(0.8);
+                } to { opacity: 1; transform: scale(1);
+                }
+            }
+
+        </style>
+
+        <title>Next Payday</title>
+
+    </head>
+    <body>
+        <!--1. inline CSS-->
+        <h1 class="frontpage-title">When is next payday?</h1>
+
+        <div id="countdown"></div>
+
+        <audio id="paydaySound" src="payday.mp3" type="audio/mpeg"></audio>
+
+        <button id="paydayBtn" class="frontpage-button">What if payday was today?</button>
+
+        <div id="gifContainer"></div>
+        
+
+
+        <script>
+            function getLastWorkingDay(year, month) {
+                const date = new Date(year, month + 1, 0)
+
+                const day = date.getDay()
+
+                if (day === 6) date.setDate(date.getDate() - 1) // Saturday
+                if (day === 0) date.setDate(date.getDate() - 1) // Sunday
+
+                return date
+            }
+
+            function getNextPayday() {
+                const now = new Date()
+                let payday = getLastWorkingDay(now.getFullYear(), now.getMonth())
+
+                if (now > payday) {
+                    payday = getLastWorkingDay(now.getFullYear(), now.getMonth() + 1)
+                }
+
+                return payday
+            }
+
+            function updateCountdown() {
+                const now = new Date()
+                const payday = getNextPayday()
+
+                // Set payday to midnight
+                payday.setHours(0,0,0,0)
+
+                const diff = payday - now
+
+                if (diff <= 0 && now.toDateString() === payday.toDateString()) {
+                    document.getElementById("countdown").innerHTML = 
+                    "PAYDAY IS TODAY!"
+                    return
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
+
+                document.getElementById("countdown").innerHTML =
+                    `${days} days ${hours}h ${minutes}m ${seconds}s`;
+            }
+
+            function playMusic() {
+                const audio = document.getElementById("paydaySound")
+                audio.play()
+            }
+
+            const gifs = [
+                "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTE0NHJnNTM1NWp5bjY0OGZmZHlnd3F4bWNpZXdlNWh2M2Nzb2Z3ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PtdOBG0BD9Vvi/giphy.gif",
+                "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3RzNDdmaDRjYTF5cWc0d21waDBxcDZlOXNibmczMW13Njlrc2V2ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/X8omQqfFyeq1a/giphy.gif",
+                "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGpkaDFpYzQzcGNsYXc3eGo4ZGcwN2pwY3BsNXBtYmtsaGNxdGdhNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MFsqcBSoOKPbjtmvWz/giphy.gif",
+                "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExanNsZnhqMWNsdWJ0bXE0ZXNxdnJraHk0YWYyeGgxempwOTR3bmZ3dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ADgfsbHcS62Jy/giphy.gif",
+                "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3lnMGdscDh5bzA3ZGZ3MjRzc3VmNzMwbDY3MnN6ejhxY3dxeXhibSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/11sBLVxNs7v6WA/giphy.gif",
+                "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDZ3bWlvMnVyYTZ3cG1jYjM4cHZ3bTViMnQ4Y25vdHk0eTVwenNyNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/04DMYESomjb6BCBNB8/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dTIxdmNnbHJhd3VwMmNzdXBpem10OWt5M2U4Z2FjMHdxazBlbGhibCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/5eFRL3jPLgbNj6iwPx/giphy.gif",
+                "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHIxZWp6Y3JsYmN1eXFqcm41dG5ocW16ZGlobDZxbXZzbXgzeTk0diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/hlfXIRjozpvTvYFfOt/giphy.gif",
+                "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2w0emVxa3NkdDI3d2hsZnVoZHFma3EydGhweTVuenhteG0wdHFvMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/RKA9WE5HGkLi8/giphy.gif",
+                "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExc21tN2pnbmVuczVuYmtkY3FkYm9pajM5Z3Q2YWpvNzltbDc2OTg2ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qY8fabziBHTyNtsqyr/giphy.gif",
+                "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNDI4b3ByMDdwNTU5OXBmZzZwdmN1Ymg5aW82YTdlcXBrNHI0bmt1YSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Rgx5zJxzPCB1AZOTNU/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aTZxcm5lampmYmh6NjBlbzFia3dmMHc4ajloZXp0Y3JsMmZhOG13aSZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/xTiTnqUxyWbsAXq7Ju/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW10MWpyOHluNzEwY3ZjN243OGR3OGd1MXdqYWtiNTR2YmxoeXI5NCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/LCdPNT81vlv3y/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcW10MWpyOHluNzEwY3ZjN243OGR3OGd1MXdqYWtiNTR2YmxoeXI5NCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/C5cDXxEgBGNjy/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aDNzYm4xa2MxMHhodXk5amQ4YmFuM3F0YW1jZnZuOGJqcWl0c2kzayZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2u11zpzwyMTy8/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3N3F4dzcwbGI5eDY3c3g3Z2VlNDE5d2l0aXh0OWNwNzRwaXRycmM1ayZlcD12MV9naWZzX3NlYXJjaCZjdD1n/uOkt51yyxz3cWXc68Y/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTEzYWIxNm0wcXU5dnhzdXd1cDBqcTh3MHJ0eG9icWIybDFxNzgwdCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XrNry0aqYWEhi/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTEzYWIxNm0wcXU5dnhzdXd1cDBqcTh3MHJ0eG9icWIybDFxNzgwdCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/qCbxDK31NoH03SwomM/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXRob21xa2dnbnF2OHhyNHdlZG9lMnBnbHRqZnEwaWg2NmFvdXN2MiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/uvoECTG2uCTrG/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnI3ODNwNmUwbjdhbGRwbHI3M244MmczbDN2aGc2OWNxMDdhNm85MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2TPKR1S8X1IvC/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnI3ODNwNmUwbjdhbGRwbHI3M244MmczbDN2aGc2OWNxMDdhNm85MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2TPKR1S8X1IvC/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnI3ODNwNmUwbjdhbGRwbHI3M244MmczbDN2aGc2OWNxMDdhNm85MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2TPKR1S8X1IvC/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnI3ODNwNmUwbjdhbGRwbHI3M244MmczbDN2aGc2OWNxMDdhNm85MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xVSypUqNsxfhzvCgKY/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnI3ODNwNmUwbjdhbGRwbHI3M244MmczbDN2aGc2OWNxMDdhNm85MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FLIGtbxONQRL092Qk0/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejZ5OWloZjR2M3hibm9oa295M3YxaTQ4Zmppb2hmZW42c3dmZTI3aiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/O3GqAYR9jFxLi/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejZ5OWloZjR2M3hibm9oa295M3YxaTQ4Zmppb2hmZW42c3dmZTI3aiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/7gNXVIPKkQad0AIIFJ/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzh1cHVvdW5xeXhkN2U4Z3k4a2syaWUyczdpcDRmbXFpZHRtcGN2NyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/f51CZdEAyIa4w/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzh1cHVvdW5xeXhkN2U4Z3k4a2syaWUyczdpcDRmbXFpZHRtcGN2NyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/dwmTtW4IuyDzOpLgqO/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzh1cHVvdW5xeXhkN2U4Z3k4a2syaWUyczdpcDRmbXFpZHRtcGN2NyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/FbiL9rsmZN3ib2JSGo/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzh1cHVvdW5xeXhkN2U4Z3k4a2syaWUyczdpcDRmbXFpZHRtcGN2NyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3oKIPf1BaBDILVxbYA/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzh1cHVvdW5xeXhkN2U4Z3k4a2syaWUyczdpcDRmbXFpZHRtcGN2NyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/CiAGl4RZxxjp1DyOgI/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzh1cHVvdW5xeXhkN2U4Z3k4a2syaWUyczdpcDRmbXFpZHRtcGN2NyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/GIbsymgJj4mgLMPA1b/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI4cG01amQ2bDV3dGRqcWtqOWlkdXJibXZpN211NmwyMzY4bnM0cSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VTRhscYhoLEQEEdWWh/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI4cG01amQ2bDV3dGRqcWtqOWlkdXJibXZpN211NmwyMzY4bnM0cSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XZpAgx6vlnaJkZPhtz/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzk2cmZhOXd4NzhyMTBrY3ZkM2VkMDlkdGEwaGM3cWp0MWJjc3FpaiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/wyz7DsIBcvniw/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MGljZHFneDRuejNwamZnMno0ZDh5NThhNjBhdjI5aXR3NGJydjRwNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/zCIhx4xzAPn0s/giphy.gif",
+                "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MGljZHFneDRuejNwamZnMno0ZDh5NThhNjBhdjI5aXR3NGJydjRwNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xUA7b68hKy839wiVJC/giphy.gif"
+            ]
+
+            function addRandomGif() {
+                const container = document.getElementById("gifContainer");
+
+                const gif = document.createElement("img");
+                gif.src = gifs[Math.floor(Math.random() * gifs.length)];
+
+                gif.className = "mlgGif";
+
+                container.appendChild(gif);
+
+                // Wait until image loads so size is correct
+                gif.onload = () => {
+                    const rect = container.getBoundingClientRect();
+
+                    const gifWidth = gif.offsetWidth;
+                    const gifHeight = gif.offsetHeight;
+
+                    const maxX = rect.width - gifWidth;
+                    const maxY = rect.height - gifHeight;
+
+                    gif.style.position = "absolute";
+                    gif.style.left = Math.max(0, Math.random() * maxX) + "px";
+                    gif.style.top = Math.max(0, Math.random() * maxY) + "px";
+                    };
+                }
+
+            let gifIntervalStarted = false;
+            let gifInterval;
+
+            function startMLGMode() {
+                if (gifIntervalStarted) return;
+
+                gifIntervalStarted = true;
+
+                playMusic();
+
+                // FAST SPAWN CHAOS MODE 😈
+                gifInterval = setInterval(addRandomGif, 400);
+            }
+
+            
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+
+            window.onload = function() {
+                document.getElementById("paydayBtn")
+                .addEventListener("click", startMLGMode);
+            };
+
+        </script>
+
+    </body>
+    </html>

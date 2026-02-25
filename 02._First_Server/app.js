@@ -43,6 +43,17 @@ app.get('/bag', (req, res) => {
     res.send({ data: req.query });
 })
 
+app.get('/proxy', (req, res) => {
+
+    fetch("https://www.google.com")
+    .then((response) => response.text())
+    .then((result) => {
+        res.send(result)
+    })
+
+})
+
+
 app.post('/dinosaurs', (req, res) => {
     console.log(req.body)
 
