@@ -1,6 +1,8 @@
 import express from 'express';
 const app = express();
 
+app.use(express.static('public'));
+
 app.use(express.json());
 
 import path from 'path';
@@ -10,6 +12,10 @@ import path from 'path';
 app.get('/', (req, res) => {
     res.sendFile(path.resolve('public/frontend/frontend.html'));
 });
+
+app.get('/about', (req, res) => {
+    res.sendFile(path.resolve('public/about/about.html'));
+})
 
 // ================== API ==================
 
