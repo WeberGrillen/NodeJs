@@ -1,3 +1,8 @@
+import dotenv from 'dotenv/config';
+
+
+console.log(process.env.SESSION_SECRET);
+
 import express from 'express';
 
 const app = express();
@@ -32,11 +37,25 @@ import helmet from 'helmet';
 app.use(helmet());
 
 
+import session from 'express-session';
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // true only works on HTTPS
+}));
+
+
+
 import middlewareRouter from './routers/middlewareRouter.js';
 app.use(middlewareRouter);
 
 import authRouter from './routers/authRouter.js';
 app.use(authRouter);
+
+import sessionRouter from './routers/sessionRouter.js';
+app.use(sessionRouter);
 
 
 
@@ -56,7 +75,7 @@ app.all('/{*splat}', (req, res) => {
     res.send({ errorMessage: `The route for ${req.path} and the HTTP method ${req.method} dose not exist` });
 });
 
-// Nullish coaelescing operator ??
+// Nullish coaelescing operator: ??
 const PORT = process.env.PORT ?? 8080;
 
 app.listen(PORT, () => {

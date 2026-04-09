@@ -2,6 +2,13 @@ import { Router } from "express";
 
 const router = Router();
 
+/*
+    Auth: Authentication and Authorization
+
+    Authentication: Knowing that the user is who they say they are
+    Authorization: Knowing if the user has privileges to access the resources
+*/
+
 
 function isAdmin(req, res, next) {
     // this simulates getting the value froma database
