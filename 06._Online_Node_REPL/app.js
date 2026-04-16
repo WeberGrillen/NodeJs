@@ -17,6 +17,10 @@ app.get('/about', (req, res) => {
     res.sendFile(path.resolve('public/pages/about/about.html'));
 })
 
+app.get('/contact', (req, res) => {
+    res.sendFile(path.resolve('public/pages/contact/contact.html'));
+})
+
 // ================== API ==================
 
 import { getOrCreateSandboxContext, executeCodeInSandbox } from './util/replUtil.js';
