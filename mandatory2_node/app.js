@@ -5,7 +5,6 @@ import session from 'express-session';
 import middlewareRouter from './routers/middlewareRouters.js';
 import sessionRouter from  './routers/sessionRouter.js';
 import authRouter from './routers/authRouter.js';
-import mongoose from 'mongoose';
 
 // App setup
 const app = express();

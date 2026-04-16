@@ -11,8 +11,8 @@ if (deleteMode) {
 }
 /* 
     .exec() // Run DCL / DDL (with no parameters)
-    .run() // Run a query without returning data
-    .all()  // Run a query and retrieve the result set
+    .run() // Run a query without returning data (INSERT, UPDATE, DELETE)
+    .all()  // Run a query and retrieve the result set (SELECT)
 */
 
 
