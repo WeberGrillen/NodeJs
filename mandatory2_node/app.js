@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit'
@@ -28,7 +29,7 @@ app.use('/auth', rateLimit({
   ipv6Subnet: 56,
 }));
 app.use(session({
-    secret: process.env.SESSION_SECRET, // todo: move to env
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }
