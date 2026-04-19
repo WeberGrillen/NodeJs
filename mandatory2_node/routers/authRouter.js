@@ -101,7 +101,9 @@ router.post('/api/auth/logout', (req, res) => {
         if (error) {
             return res.status(500).send({ error: 'Could not log out'});
         }
-        res.send({ message: 'Logged out succesfully' });
+        res.send({ data: 
+            { successMessage: 'Logged out successfully' }
+        });
     });
 });
 
