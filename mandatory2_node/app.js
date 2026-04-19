@@ -28,7 +28,7 @@ app.use('/auth', rateLimit({
   ipv6Subnet: 56,
 }));
 app.use(session({
-    secret: 'keyboard cat', // todo: move to env
+    secret: process.env.SESSION_SECRET, // todo: move to env
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false }
