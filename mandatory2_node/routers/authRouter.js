@@ -1,53 +1,102 @@
 import { Router } from "express";
-import bcrypt from 'bcrypt';
-import User from '../models/User.js';
-
+import db from '../database/connection.js';
+import { compareHashedPasswords, hashPassword } from "../utils/passwordHashing.js";
 const router = Router();
 
-// temp "database"
-const users = [];
+
 
 // register
-router.post('/auth/register', async (req, res) => {
-    const { username, password } = req.body;
+router.post('/api/auth/register', async (req, res) => {
 
-    // Check if user already exits
-    const existingUser =  users.find(user => user.username === username);
-    if (existingUser) {
-        return res.status(400).send({ message: 'Username already taken' });
+    const { username, email, firstName, lastName, password1, password2 } = req.body;
+
+    // Check if user fill out all info
+    if (( !username || !email || !firstName || !lastName || !password1 || !password2 )) {
+        return res.status(400).send({
+            data: { errorMessage: "Please fill out all information fields" }
+        });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // Check for passwords are the same
+    if (password1 !== password2) {
+        return res.status(400).send({
+            data: {errorMessage: "Passwords do not match"}
+        });
+    }
 
-    // Save user
-    users.push({ username, password: hashedPassword });
+    // Check to find existing user in db
+    const existingUser = await db.get(
+        'SELECT id FROM users WHERE email = ? OR username = ?',
+        [email, username]
+    );
+   
+    if (existingUser) {
+        return res.status(400).send({
+            data: { errorMessage: "Username or email already taken"} 
+        });
+    }
 
-    res.status(201).send({ message: 'User registered successfully' });
+
+    const hashedPassword = await hashPassword(password1);
+    try {
+        await db.run(`
+            INSERT INTO users
+            (username, email, first_name, last_name, password) VALUES (?, ?, ?, ? ,?);`,
+            [username, email, firstName, lastName, hashedPassword]
+        );
+    } catch (error) {
+        return res.status(500).send({
+            data: { errorMessage: "Something went wrong with creating a user"}
+        });
+    }
+
+    res.status(201).send({ data:
+        { successMessage: "Account created!" }
+    });
 
 });
 
 // Log-in
-router.post('/auth/login', async (req, res) => {
-    const { username, password } = req.body;
+router.post('/api/auth/login', async (req, res) => {
 
-    const user = users.find(user => user.username === username);
+    const { emailOrUsername, password } = req.body;
+
+    if (!emailOrUsername || !password) {
+        return res.status(400).send({
+            data: { errorMessage: "Please fill out all information fields" }
+        });
+    }
+
+    const user = await db.get(
+        'SELECT * FROM users WHERE email = ? OR username = ?',
+        [emailOrUsername, emailOrUsername]
+    );
+
     if (!user) {
-        return res.status(400).send({ error: 'User not found' });
+        return res.status(400).send({
+            data: { errorMessage: "Invalid credentials"} 
+        });
     }
 
-    const passwordIsSame = await bcrypt.compare(password, user.password);
-    if (!passwordIsSame) {
-        return res.status(400).send({ error: 'Wrong password '});
-    }
+    const isPasswordEqual = await compareHashedPasswords(password, user.password);
 
-    req.session.user = { username: user.username }; // ← save to session
+    if (!isPasswordEqual) {
+        return res.status(400).send({
+            data: { errorMessage: "Invalid credentials" }
+        });
+    }   
 
-    res.send({ message: 'Logged in succesfully' });
+    const { password: _, ...safeUser } = user;
+    req.session.user = safeUser;
+
+    res.status(200).send({ data:
+        { successMessage: "Login successfull" }
+    });
+
 });
 
 // Log-out
-router.post('/auth/logout', (req, res) => {
+router.post('/api/auth/logout', (req, res) => {
     req.session.destroy((error) => {
         if (error) {
             return res.status(500).send({ error: 'Could not log out'});
