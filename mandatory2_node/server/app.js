@@ -6,10 +6,16 @@ import session from 'express-session';
 import middlewareRouter from './routers/middlewareRouters.js';
 import sessionRouter from  './routers/sessionRouter.js';
 import authRouter from './routers/authRouter.js';
+import cors from 'cors';
 
 // App setup
 const app = express();
 const PORT = process.env.PORT ?? 8080;
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 
 // Express middleware 
 app.use(express.json());
@@ -34,6 +40,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: { secure: false }
 }));
+
 
 // Routers
 app.use(middlewareRouter);

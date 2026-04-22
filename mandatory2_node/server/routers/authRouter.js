@@ -1,48 +1,45 @@
 import { Router } from "express";
 import db from '../database/connection.js';
 import { compareHashedPasswords, hashPassword } from "../utils/passwordHashing.js";
+import { sendConfirmationEmail } from '../utils/emailService.js';
+
 const router = Router();
-
-
 
 // register
 router.post('/api/auth/register', async (req, res) => {
 
-    const { username, email, firstName, lastName, password1, password2 } = req.body;
+    const { name, email, password, confirmPassword } = req.body;
 
-    // Check if user fill out all info
-    if (( !username || !email || !firstName || !lastName || !password1 || !password2 )) {
+    if (( !name || !email || !password || !confirmPassword )) {
         return res.status(400).send({
             data: { errorMessage: "Please fill out all information fields" }
         });
     }
 
-    // Check for passwords are the same
-    if (password1 !== password2) {
+    if (password !== confirmPassword) {
         return res.status(400).send({
             data: {errorMessage: "Passwords do not match"}
         });
     }
 
-    // Check to find existing user in db
     const existingUser = await db.get(
-        'SELECT id FROM users WHERE email = ? OR username = ?',
-        [email, username]
+        'SELECT id FROM users WHERE email = ?',
+        [email]
     );
    
     if (existingUser) {
         return res.status(400).send({
-            data: { errorMessage: "Username or email already taken"} 
+            data: { errorMessage: "Email is already taken"} 
         });
     }
 
 
-    const hashedPassword = await hashPassword(password1);
+    const hashedPassword = await hashPassword(password);
     try {
         await db.run(`
             INSERT INTO users
-            (username, email, first_name, last_name, password) VALUES (?, ?, ?, ? ,?);`,
-            [username, email, firstName, lastName, hashedPassword]
+            (name, email, password) VALUES (?, ?, ?);`,
+            [name, email, hashedPassword]
         );
     } catch (error) {
         return res.status(500).send({
@@ -50,6 +47,7 @@ router.post('/api/auth/register', async (req, res) => {
         });
     }
 
+    await sendConfirmationEmail(name, email);
     res.status(201).send({ data:
         { successMessage: "Account created!" }
     });
@@ -59,17 +57,17 @@ router.post('/api/auth/register', async (req, res) => {
 // Log-in
 router.post('/api/auth/login', async (req, res) => {
 
-    const { emailOrUsername, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!emailOrUsername || !password) {
+    if (!email || !password) {
         return res.status(400).send({
             data: { errorMessage: "Please fill out all information fields" }
         });
     }
 
     const user = await db.get(
-        'SELECT * FROM users WHERE email = ? OR username = ?',
-        [emailOrUsername, emailOrUsername]
+        'SELECT * FROM users WHERE email = ?',
+        [email]
     );
 
     if (!user) {

@@ -18,17 +18,15 @@ if (deleteMode) {
 await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username VARCHAR(50) NOT NULL UNIQUE,
+        name VARCHAR(50) NOT NULL,
         email VARCHAR(50) NOT NULL UNIQUE,
-        first_name VARCHAR(50) NOT NULL,
-        last_name VARCHAR(50) NOT NULL,
         password VARCHAR(100) NOT NULL
     );
 `);
 
 if (deleteMode) {
     await db.run(
-        'INSERT INTO users (username, email, first_name, last_name, password) VALUES (?, ?, ?, ?, ?)',
-        ['admin', 'admin@admin.com', 'Admin', 'Admin', ADMIN_PASSWORD]
+        'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+        ['admin', 'admin@admin.com', ADMIN_PASSWORD]
     );
-;}
+}
