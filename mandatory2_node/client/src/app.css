@@ -1,254 +1,91 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 
 :root {
-  --color-dark-green: #346739;
-  --color-mid-green: #79AE6F;
-  --color-light-green: #9FCB98;
-  --color-cream: #F2EDC2;
+  --color-background: #FAF8F4;
+  --color-surface:  	#FFFFFF;
+  --color-soft:  	#F2EEE6;
+  --color-line: #E8E4DC;
+  --color-primary-text: #1A1614;
+  --color-secondary-text:  	#6F6A63;
+  --color-accent:  #c46a3a;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* background-color: var(--color-accent); */
 }
 
-body {
-  background-color: var(--color-cream);
-  color: var(--color-dark-green);
-  font-family: 'Poppins', sans-serif;
-}
+.sidebar {
+  position: sticky;
+  top: 0;
 
-button {
-  background-color: var(--color-dark-green);
-  color: var(--color-cream);
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  border-radius: 4px;
-  font-family: 'Poppins', sans-serif;
-}
-
-button:hover {
-  background-color: var(--color-mid-green);
-}
-
-a {
-  color: var(--color-dark-green);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--color-mid-green);
-}
-
-input {
-  font-family: 'Poppins', sans-serif;
-}
-
-input:focus {
-  outline: none;
-}
-
-/* Navbar */
-.navbar {
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 2rem;
-  background-color: var(--color-dark-green);
-  font-family: 'Poppins', sans-serif;
-}
+  flex-direction: column;
+  align-items: flex-start;
 
-.navbar a {
-  color: var(--color-cream);
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.navbar a:hover {
-  color: var(--color-light-green);
-}
-
-.navbar-brand {
-  margin-right: auto;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.navbar button,
-.navbar .btn {
-  background-color: transparent;
-  color: var(--color-cream);
-  border: 2px solid var(--color-cream);
-  padding: 0.4rem 1.2rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  font-family: 'Poppins', sans-serif;
-  text-decoration: none;
-}
-
-.navbar button:hover,
-.navbar .btn:hover {
-  background-color: var(--color-cream);
-  color: var(--color-dark-green);
-}
-
-.navbar .btn-filled {
-  background-color: var(--color-cream);
-  color: var(--color-dark-green);
-}
-
-.navbar .btn-filled:hover {
-  background-color: var(--color-light-green);
-  border-color: var(--color-light-green);
-}
-
-/* Landing page */
-.landing-main {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - 60px);
-}
-
-.landing-main h1 {
-  font-size: 3rem;
-  font-weight: 600;
-  color: var(--color-dark-green);
-}
-
-/* Auth pages */
-.page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 232px;
   min-height: 100vh;
-  background-color: var(--color-cream);
+
+  padding: 26px 18px 18px;
+  gap: 18px;
+
+  background-color: var(--color-background);
+
+  text-decoration: none;
 }
 
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  width: 360px;
+.sidebar-brand {
   display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  border: 1px solid #9FCB98;
+  align-items: center;
+  justify-content: flex-start;
+  width: 80%;
+  
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  background: transparent;
+  align-self: center;
+  
 }
 
-.card h1 {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--color-dark-green);
-  margin-bottom: 0.5rem;
+.sidebar a {
+  text-decoration: none;
+  color: inherit;
+  
 }
 
-.card form {
+.sidebar-btn {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.input-floating {
-  position: relative;
-}
-
-.input-floating input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1.5px solid #9FCB98;
-  border-radius: 8px;
-  font-size: 14px;
-  box-sizing: border-box;
-  background: white;
-  color: var(--color-dark-green);
-  transition: border-color 0.2s;
-}
-
-.input-floating input.invalid {
-  border-color: red;
-}
-
-.input-floating input:focus {
-  outline: none;
-  border-color: var(--color-dark-green);
-}
-
-.input-floating label {
-  position: absolute;
-  left: 12px;
-  top: -9px;
-  font-size: 12px;
-  color: var(--color-dark-green);
-  pointer-events: none;
-  background: white;
-  padding: 0 4px;
-}
-
-.error-text {
-  font-size: 12px;
-  color: red;
-  margin-top: 4px;
-}
-
-.toggle-pw {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 90%;
+  height: 19px;
+  padding: 12px 11px;
+  background-color: transparent;
   border: none;
-  cursor: pointer;
-  padding: 0;
-  font-size: 16px;
-  color: #79AE6F;
-}
-
-.submit {
-  width: 100%;
-  padding: 0.75rem;
-  background: var(--color-dark-green);
-  color: var(--color-cream);
-  border: none;
-  border-radius: 8px;
   font-size: 15px;
-  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  align-self: center;
 }
 
-.submit:hover {
-  background: var(--color-mid-green);
+.sidebar-btn.active {
+  background-color: var(--color-soft);
+  border-radius: 4px;
 }
 
-.login-link {
-  text-align: center;
-  font-size: 13px;
-  color: #79AE6F;
-}
-
-.login-link a {
-  color: var(--color-dark-green);
-  font-weight: 600;
-}
-
-.forgot-password {
-  text-align: right;
-  font-size: 13px;
-}
-
-.homepage-filler {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: calc(100vh - 60px);
-    text-align: center;
-    gap: 1rem;
+.sidebar-create-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  border-radius: 20px;
+  gap: 8px;
+  background-color: #c46a3a;
+  width: 195px;
+  height: 45px;
+  border: none;
+  color: white;
+  font-size: 15px;
 }

@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: foodapp
+      POSTGRES_PASSWORD: foodapp_dev
+      POSTGRES_DB: foodapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - foodapp_data:/var/lib/postgresql/data
+
+volumes:
+  foodapp_data:

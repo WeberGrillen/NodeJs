@@ -1,5 +1,5 @@
 import { Router } from "express";
-import db from '../database/connection.js';
+import pool from '../database/connection.js';
 import { compareHashedPasswords, hashPassword } from "../utils/passwordHashing.js";
 import { sendConfirmationEmail } from '../utils/emailService.js';
 
@@ -7,8 +7,9 @@ const router = Router();
 
 // register
 router.post('/api/auth/register', async (req, res) => {
-
-    const { name, email, password, confirmPassword } = req.body;
+    const name = req.body.name?.trim();
+    const email = req.body.email?.toLowerCase().trim();
+    const { password, confirmPassword } = req.body;
 
     if (( !name || !email || !password || !confirmPassword )) {
         return res.status(400).send({
@@ -22,10 +23,11 @@ router.post('/api/auth/register', async (req, res) => {
         });
     }
 
-    const existingUser = await db.get(
-        'SELECT id FROM users WHERE email = ?',
+    const existingResult = await pool.query(
+        'SELECT id FROM users WHERE email = $1',
         [email]
     );
+    const existingUser = existingResult.rows[0];
    
     if (existingUser) {
         return res.status(400).send({
@@ -33,21 +35,26 @@ router.post('/api/auth/register', async (req, res) => {
         });
     }
 
-
     const hashedPassword = await hashPassword(password);
+
     try {
-        await db.run(`
-            INSERT INTO users
-            (name, email, password) VALUES (?, ?, ?);`,
+        await pool.query(
+            `INSERT INTO users (name, email, password) VALUES ($1, $2, $3);`,
             [name, email, hashedPassword]
         );
     } catch (error) {
+        if (error.code === '23505' ) { // postgres unique violation
+            return res.status(400).send({
+                data: { errorMessage: "Email is already taken"}
+            });
+        }
         return res.status(500).send({
             data: { errorMessage: "Something went wrong with creating a user"}
         });
     }
 
     await sendConfirmationEmail(name, email);
+
     res.status(201).send({ data:
         { successMessage: "Account created!" }
     });
@@ -56,8 +63,8 @@ router.post('/api/auth/register', async (req, res) => {
 
 // Log-in
 router.post('/api/auth/login', async (req, res) => {
-
-    const { email, password } = req.body;
+    const email = req.body.email?.toLowerCase().trim();
+    const { password } = req.body;
 
     if (!email || !password) {
         return res.status(400).send({
@@ -65,10 +72,12 @@ router.post('/api/auth/login', async (req, res) => {
         });
     }
 
-    const user = await db.get(
-        'SELECT * FROM users WHERE email = ?',
+    const userResult = await pool.query(
+        'SELECT * FROM users WHERE email = $1',
         [email]
     );
+
+    const user = userResult.rows[0];
 
     if (!user) {
         return res.status(400).send({
@@ -77,7 +86,6 @@ router.post('/api/auth/login', async (req, res) => {
     }
 
     const isPasswordEqual = await compareHashedPasswords(password, user.password);
-
     if (!isPasswordEqual) {
         return res.status(400).send({
             data: { errorMessage: "Invalid credentials" }
@@ -86,11 +94,9 @@ router.post('/api/auth/login', async (req, res) => {
 
     const { password: _, ...safeUser } = user;
     req.session.user = safeUser;
-
-    res.status(200).send({ data:
-        { successMessage: "Login successfull" }
+    res.status(200).send({
+        data: { successMessage: "Login successfull" }
     });
-
 });
 
 // Log-out

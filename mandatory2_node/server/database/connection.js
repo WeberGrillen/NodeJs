@@ -1,9 +1,14 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import 'dotenv/config';
+import pg from 'pg';
 
-const connection = await open({
-    filename: 'users.db',
-    driver: sqlite3.Database
-});
+const { Pool } = pg; // manages multiple connections at the same time
 
-export default connection;
+if (!process.env.DATABASE_URL) {
+    throw new Error(' DATABASE_URL is not set in .env');
+}
+
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL
+})
+
+export default pool;
